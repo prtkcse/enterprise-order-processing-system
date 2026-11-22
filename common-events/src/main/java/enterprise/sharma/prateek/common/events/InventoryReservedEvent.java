@@ -1,0 +1,10 @@
+package enterprise.sharma.prateek.common.events;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+public record InventoryReservedEvent(
+
+		UUID eventId, UUID orderId, LocalDateTime reservedAt
+
+) {}
