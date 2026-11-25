@@ -63,11 +63,10 @@ public interface OutboxEventRepository extends JpaRepository<OutboxEvent, UUID> 
 			    END,
 			    NEXT_RETRY_AT = CASE
 			        WHEN RETRY_COUNT + 1 >= 10 THEN NULL
-			        ELSE CURRENT_TIMESTAMP +
-			             NUMTODSINTERVAL(
-			                 LEAST(300, POWER(2, RETRY_COUNT + 1)),
-			                 'SECOND'
-			             )
+			        ELSE DATE_ADD(
+			            CURRENT_TIMESTAMP,
+			            INTERVAL LEAST(300, POW(2, RETRY_COUNT + 1)) SECOND
+			        )
 			    END
 			WHERE ID = :eventId
 			  AND STATUS = 'PROCESSING'
@@ -83,8 +82,7 @@ public interface OutboxEventRepository extends JpaRepository<OutboxEvent, UUID> 
 			    ERROR_MESSAGE = 'Recovered stale event'
 			WHERE STATUS = 'PROCESSING'
 			  AND CLAIMED_AT <
-			      CURRENT_TIMESTAMP -
-			      NUMTODSINTERVAL(:minutes, 'MINUTE')
+			      DATE_SUB(CURRENT_TIMESTAMP, INTERVAL :minutes MINUTE)
 			""", nativeQuery = true)
 	int recoverStaleEvents(@Param("minutes") int minutes);
 

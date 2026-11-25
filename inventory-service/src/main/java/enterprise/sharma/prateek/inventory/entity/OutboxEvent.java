@@ -38,7 +38,7 @@ public class OutboxEvent {
 	private String eventKey;
 
 	@Lob
-	@Column(name = "PAYLOAD", nullable = false)
+	@Column(name = "PAYLOAD", nullable = false, columnDefinition = "json")
 	private String payload;
 
 	@Column(name = "STATUS", nullable = false)
