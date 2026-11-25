@@ -4,7 +4,20 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record PaymentCompletedEvent(UUID eventId, UUID orderId, UUID paymentId, BigDecimal amount,
-		LocalDateTime completedAt) {
+public record PaymentCompletedEvent(
+		
+		UUID eventId,
 
-}
+		UUID paymentId,
+
+		UUID orderId,
+
+		BigDecimal amount,
+
+		String currency,
+
+		String transactionReference,
+
+		LocalDateTime completedAt
+		
+		) {}

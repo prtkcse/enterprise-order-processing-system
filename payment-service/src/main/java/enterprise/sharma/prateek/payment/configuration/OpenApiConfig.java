@@ -1,0 +1,24 @@
+package enterprise.sharma.prateek.payment.configuration;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+
+@Configuration
+public class OpenApiConfig {
+
+	@Bean
+	public OpenAPI paymentOpenAPI() {
+
+		return new OpenAPI().info(new Info().title("Payment Service API").version("1.0.0").description("""
+				Enterprise Payment Service API.
+
+				Handles payment initiation,
+				payment status retrieval,
+				and payment processing.
+				"""));
+	}
+
+}

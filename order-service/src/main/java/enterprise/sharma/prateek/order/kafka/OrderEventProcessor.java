@@ -112,7 +112,7 @@ public class OrderEventProcessor {
 
 		saveOutbox(order.getId(), "OrderFailed", "order.failed", order.getId().toString(),
 				Map.of("eventId", UUID.randomUUID().toString(), "orderId", order.getId().toString(), "customerId",
-						order.getCustomerId(), "reason", event.reason(), "failedAt", LocalDateTime.now().toString()));
+						order.getCustomerId(), "reason", event.failureReason(), "failedAt", LocalDateTime.now().toString()));
 
 		// Compensation event: Payment failure should release reserved stock.
 		saveOutbox(order.getId(), "InventoryReleaseRequested", "inventory.release.requested", order.getId().toString(),

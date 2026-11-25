@@ -1,5 +1,6 @@
 package enterprise.sharma.prateek.inventory.kafka;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,6 +49,7 @@ public class InventoryEventProcessor {
 	public void processOrderCreated(OrderCreatedEvent event) {
 
 		UUID orderId = event.orderId();
+		BigDecimal totalAmount = event.totalAmount();
 
 		// Idempotency: do not process the same order twice.
 		Optional<InventoryReservation> existing = reservationRepository.findByOrderId(orderId);
@@ -121,7 +123,7 @@ public class InventoryEventProcessor {
 		reservationRepository.save(reservation);
 
 		InventoryReservedEvent reservedEvent = new InventoryReservedEvent(UUID.randomUUID(), orderId,
-				LocalDateTime.now());
+				totalAmount, LocalDateTime.now());
 
 		saveOutbox(orderId, "InventoryReserved", "inventory.reserved", orderId.toString(), reservedEvent);
 	}
