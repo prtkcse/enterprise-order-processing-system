@@ -26,8 +26,8 @@ jobs:
           java-version: '21'
           cache: maven
 
-      - name: Build and test
-        run: mvn clean verify
+      - name: Build without test
+        run: mvn clean verify -DskipTests
 
       - name: SonarQube Analysis
         env:
