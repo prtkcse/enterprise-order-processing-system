@@ -2,6 +2,8 @@ package enterprise.sharma.prateek.order.controller;
 
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,8 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
+	
+	private static final Logger log = LoggerFactory.getLogger(OrderController.class);
 
 	private final OrderService orderService;
 
@@ -32,8 +36,12 @@ public class OrderController {
 
 	@PostMapping
 	public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody CreateOrderRequest request) {
+		
+		log.info("CreateOrderRequest received : "+request);
 
 		OrderResponse response = orderService.createOrder(request);
+		
+		log.info("OrderResponse sent : "+response);
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
@@ -41,28 +49,34 @@ public class OrderController {
 
 	@GetMapping("/{orderId}")
 	public ResponseEntity<OrderResponse> getOrder(@PathVariable UUID orderId) {
+		
+		log.info("getOrder request received with orderId : "+orderId);
 		return ResponseEntity.ok(orderService.getOrder(orderId));
 	}
 
 	@GetMapping
 	public ResponseEntity<Page<OrderResponse>> getOrders(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "20") int size) {
+		log.info("getOrders request received");
 		return ResponseEntity.ok(orderService.getOrders(page, size));
 	}
 
 	@GetMapping("/customer/{customerId}")
 	public ResponseEntity<Page<OrderResponse>> getCustomerOrders(@PathVariable String customerId,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+		log.info("getCustomerOrders request received with customerId : "+customerId);
 		return ResponseEntity.ok(orderService.getCustomerOrders(customerId, page, size));
 	}
 
 	@PatchMapping("/{orderId}/cancel")
 	public ResponseEntity<CancelOrderResponse> cancelOrder(@PathVariable UUID orderId) {
+		log.info("cancelOrder request received with orderId : "+orderId);
 		return ResponseEntity.ok(orderService.cancelOrder(orderId));
 	}
 
 	@GetMapping("/{orderId}/status")
 	public ResponseEntity<OrderResponse> getOrderStatus(@PathVariable UUID orderId) {
+		log.info("getOrderStatus request received with orderId : "+orderId);
 		return ResponseEntity.ok(orderService.getOrder(orderId));
 	}
 

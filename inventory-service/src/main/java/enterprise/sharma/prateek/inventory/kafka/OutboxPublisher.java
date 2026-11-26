@@ -19,6 +19,7 @@ import enterprise.sharma.prateek.inventory.repository.OutboxEventRepository;
 public class OutboxPublisher {
 
 	private static final Logger log = LoggerFactory.getLogger(OutboxPublisher.class);
+	private static final Logger kafkaProducerLogger = LoggerFactory.getLogger("KAFKA_PRODUCER");
 
 	private final OutboxEventRepository outboxRepository;
 	private final KafkaTemplate<String, String> kafkaTemplate;
@@ -77,13 +78,15 @@ public class OutboxPublisher {
 
 			kafkaTemplate.send(event.getTopic(), event.getEventKey(), event.getPayload()).get(10, TimeUnit.SECONDS);
 
+			log.info("KAFKA PUBLISH SUCCESS | EventId={} | Topic={} | Key={} | Payload={}", event.getId(),
+					event.getTopic(), event.getEventKey(), event.getPayload());
+
+			kafkaProducerLogger.info("KAFKA PUBLISH SUCCESS | EventId={} | Topic={} | Key={} | Payload={}",
+					event.getId(), event.getTopic(), event.getEventKey(), event.getPayload());
+
 			outboxRepository.markPublished(eventId);
 
-			log.info("Inventory event published. eventId={}, topic={}", eventId, event.getTopic());
-
 		} catch (Exception ex) {
-
-			log.error("Inventory event publishing failed. eventId={}", eventId, ex);
 
 			String error = ex.getMessage();
 
@@ -94,6 +97,12 @@ public class OutboxPublisher {
 			if (error.length() > 1900) {
 				error = error.substring(0, 1900);
 			}
+
+			log.error("KAFKA PUBLISH FAILURE | EventId={} | Topic={} | Key={} | Payload={}", event.getId(),
+					event.getTopic(), event.getEventKey(), event.getPayload(), error);
+
+			kafkaProducerLogger.error("KAFKA PUBLISH FAILURE | EventId={} | Topic={} | Key={} | Payload={}",
+					event.getId(), event.getTopic(), event.getEventKey(), event.getPayload(), error);
 
 			outboxRepository.markFailed(eventId, error);
 		}

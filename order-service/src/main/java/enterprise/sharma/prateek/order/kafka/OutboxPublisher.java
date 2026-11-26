@@ -19,6 +19,7 @@ import enterprise.sharma.prateek.order.repository.OutboxEventRepository;
 public class OutboxPublisher {
 
 	private static final Logger log = LoggerFactory.getLogger(OutboxPublisher.class);
+	private static final Logger kafkaProducerLogger = LoggerFactory.getLogger("KAFKA_PRODUCER");
 
 	private final OutboxEventRepository outboxRepository;
 	private final KafkaTemplate<String, String> kafkaTemplate;
@@ -68,11 +69,19 @@ public class OutboxPublisher {
 
 			outboxRepository.markPublished(eventId);
 
-			log.info("Outbox event published. eventId={}, topic={}", eventId, event.getTopic());
+			log.info("KAFKA PUBLISH SUCCESS | EventId={} | Topic={} | Key={} | Payload={}", event.getId(),
+					event.getTopic(), event.getEventKey(), event.getPayload());
+
+			kafkaProducerLogger.info("KAFKA PUBLISH SUCCESS | EventId={} | Topic={} | Key={} | Payload={}",
+					event.getId(), event.getTopic(), event.getEventKey(), event.getPayload());
 
 		} catch (Exception ex) {
 
-			log.error("Outbox event publishing failed. eventId={}", eventId, ex);
+			log.error("KAFKA PUBLISH FAILURE | EventId={} | Topic={} | Key={} | Payload={}", event.getId(),
+					event.getTopic(), event.getEventKey(), event.getPayload(), ex);
+
+			kafkaProducerLogger.error("KAFKA PUBLISH FAILURE | EventId={} | Topic={} | Key={} | Payload={}",
+					event.getId(), event.getTopic(), event.getEventKey(), event.getPayload(), ex);
 
 			outboxRepository.markFailed(eventId, truncate(ex.getMessage()));
 		}

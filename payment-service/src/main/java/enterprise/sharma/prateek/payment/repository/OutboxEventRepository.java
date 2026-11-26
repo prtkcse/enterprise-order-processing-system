@@ -45,7 +45,7 @@ public interface OutboxEventRepository extends JpaRepository<OutboxEvent, UUID> 
 			SET STATUS = 'PUBLISHED',
 			    PUBLISHED_AT = CURRENT_TIMESTAMP,
 			    CLAIMED_AT = NULL,
-			    LAST_ERROR = NULL
+			    ERROR_MESSAGE = NULL
 			WHERE ID = :eventId
 			  AND STATUS = 'PROCESSING'
 			""", nativeQuery = true)
@@ -70,7 +70,7 @@ public interface OutboxEventRepository extends JpaRepository<OutboxEvent, UUID> 
 			    END,
 
 			    CLAIMED_AT = NULL,
-			    LAST_ERROR = :error,
+			    ERROR_MESSAGE = :error,
 			    RETRY_COUNT = RETRY_COUNT + 1
 
 			WHERE ID = :eventId

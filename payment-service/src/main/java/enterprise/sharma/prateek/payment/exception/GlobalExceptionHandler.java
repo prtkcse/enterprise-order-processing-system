@@ -16,9 +16,13 @@ import enterprise.sharma.prateek.payment.dto.ErrorResponse;
 public class GlobalExceptionHandler {
 	
 	private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+	private static final Logger errorLogger = LoggerFactory.getLogger("ERROR_LOGGER");
 
 	@ExceptionHandler(PaymentNotFoundException.class)
 	public ResponseEntity<ErrorResponse> handleNotFound(PaymentNotFoundException ex) {
+		
+		log.error("PaymentNotFoundException : "+ex.getMessage());
+		errorLogger.error("PaymentNotFoundException : "+ex.getMessage());
 
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
 				.body(new ErrorResponse(ex.getMessage(), LocalDateTime.now()));
@@ -26,6 +30,9 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(DuplicatePaymentException.class)
 	public ResponseEntity<ErrorResponse> handleDuplicate(DuplicatePaymentException ex) {
+		
+		log.error("DuplicatePaymentException : "+ex.getMessage());
+		errorLogger.error("DuplicatePaymentException : "+ex.getMessage());
 
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(ex.getMessage(), LocalDateTime.now()));
 	}
@@ -36,6 +43,9 @@ public class GlobalExceptionHandler {
 		String message = ex.getBindingResult().getFieldErrors().stream()
 				.map(error -> error.getField() + ": " + error.getDefaultMessage()).findFirst()
 				.orElse("Validation failed");
+		
+		log.error("MethodArgumentNotValidException : "+message);
+		errorLogger.error("MethodArgumentNotValidException : "+message);
 
 		return ResponseEntity.badRequest().body(new ErrorResponse(message, LocalDateTime.now()));
 	}
@@ -43,7 +53,8 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
 		
-		log.error("Unexpected exception occurred: ", ex);
+		log.error("Exception : "+ex.getMessage());
+		errorLogger.error("Exception : "+ex.getMessage());
 
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body(new ErrorResponse("Internal payment service error", LocalDateTime.now()));

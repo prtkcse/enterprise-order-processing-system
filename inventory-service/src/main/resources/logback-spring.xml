@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+	<!-- ================================================== -->
+	<!-- LOG DIRECTORY -->
+	<!-- ================================================== -->
+
+	<property name="LOG_DIR" value="C:/logs/inventory_service" />
+
+	<!-- ================================================== -->
+	<!-- COMMON LOG FORMAT -->
+	<!-- ================================================== -->
+
+	<property name="LOG_PATTERN"
+		value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-}] %logger{36} - %msg%n" />
+
+	<!-- ================================================== -->
+	<!-- CONSOLE APPENDER -->
+	<!-- ================================================== -->
+
+	<appender name="CONSOLE"
+		class="ch.qos.logback.core.ConsoleAppender">
+
+		<encoder>
+			<pattern>${LOG_PATTERN}</pattern>
+		</encoder>
+
+	</appender>
+
+	<!-- ================================================== -->
+	<!-- APPLICATION LOG -->
+	<!-- ================================================== -->
+
+	<appender name="APPLICATION_FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+		<file>${LOG_DIR}/application.log</file>
+
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+
+			<fileNamePattern>
+				${LOG_DIR}/application-%d{yyyy-MM-dd}.%i.log.gz
+			</fileNamePattern>
+
+			<maxFileSize>20MB</maxFileSize>
+			<maxHistory>14</maxHistory>
+			<totalSizeCap>500MB</totalSizeCap>
+
+		</rollingPolicy>
+
+		<encoder>
+			<pattern>${LOG_PATTERN}</pattern>
+		</encoder>
+
+	</appender>
+
+	<!-- ================================================== -->
+	<!-- KAFKA CONSUMER LOG -->
+	<!-- ================================================== -->
+
+	<appender name="KAFKA_CONSUMER_FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+		<file>${LOG_DIR}/kafka-consumer.log</file>
+
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+
+			<fileNamePattern>
+				${LOG_DIR}/kafka-consumer-%d{yyyy-MM-dd}.%i.log.gz
+			</fileNamePattern>
+
+			<maxFileSize>20MB</maxFileSize>
+			<maxHistory>14</maxHistory>
+			<totalSizeCap>500MB</totalSizeCap>
+
+		</rollingPolicy>
+
+		<encoder>
+			<pattern>${LOG_PATTERN}</pattern>
+		</encoder>
+
+	</appender>
+
+	<!-- ================================================== -->
+	<!-- KAFKA PRODUCER LOG -->
+	<!-- ================================================== -->
+
+	<appender name="KAFKA_PRODUCER_FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+		<file>${LOG_DIR}/kafka-producer.log</file>
+
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+
+			<fileNamePattern>
+				${LOG_DIR}/kafka-producer-%d{yyyy-MM-dd}.%i.log.gz
+			</fileNamePattern>
+
+			<maxFileSize>20MB</maxFileSize>
+			<maxHistory>14</maxHistory>
+			<totalSizeCap>500MB</totalSizeCap>
+
+		</rollingPolicy>
+
+		<encoder>
+			<pattern>${LOG_PATTERN}</pattern>
+		</encoder>
+
+	</appender>
+
+	<!-- ================================================== -->
+	<!-- ERROR LOG -->
+	<!-- ================================================== -->
+
+	<appender name="ERROR_FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+		<file>${LOG_DIR}/errors.log</file>
+
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+
+			<fileNamePattern>
+				${LOG_DIR}/errors-%d{yyyy-MM-dd}.%i.log.gz
+			</fileNamePattern>
+
+			<maxFileSize>20MB</maxFileSize>
+			<maxHistory>30</maxHistory>
+			<totalSizeCap>500MB</totalSizeCap>
+
+		</rollingPolicy>
+
+		<!-- Only ERROR and FATAL level logs -->
+
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>ERROR</level>
+		</filter>
+
+		<encoder>
+			<pattern>${LOG_PATTERN}</pattern>
+		</encoder>
+
+	</appender>
+
+	<!-- ================================================== -->
+	<!-- KAFKA LOGGER ROUTING -->
+	<!-- ================================================== -->
+
+	<logger name="KAFKA_CONSUMER" level="INFO" additivity="true">
+
+		<appender-ref ref="KAFKA_CONSUMER_FILE" />
+
+	</logger>
+
+	<logger name="KAFKA_PRODUCER" level="INFO" additivity="true">
+
+		<appender-ref ref="KAFKA_PRODUCER_FILE" />
+
+	</logger>
+
+	<logger name="ERROR_LOGGER" level="ERROR" additivity="false">
+		<appender-ref ref="ERROR_FILE" />
+	</logger>
+
+	<!-- ================================================== -->
+	<!-- ROOT LOGGER -->
+	<!-- ================================================== -->
+
+	<root level="INFO">
+
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="APPLICATION_FILE" />
+		<appender-ref ref="ERROR_FILE" />
+
+	</root>
+
+</configuration>

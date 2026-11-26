@@ -19,16 +19,22 @@ import jakarta.servlet.http.HttpServletRequest;
 public class GlobalExceptionHandler {
 	
 	private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+	private static final Logger errorLogger = LoggerFactory.getLogger("ERROR_LOGGER");
 
 	@ExceptionHandler(OrderNotFoundException.class)
 	public ResponseEntity<ErrorResponse> handleOrderNotFound(OrderNotFoundException ex, HttpServletRequest request) {
-
+		log.error("OrderNotFoundException : "+ex.getMessage()+"\n"+request.getRequestURI());
+		errorLogger.error("OrderNotFoundException : "+ex.getMessage()+"\n"+request.getRequestURI());
+		
 		return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI(), Map.of());
 
 	}
 
 	@ExceptionHandler(InvalidOrderException.class)
 	public ResponseEntity<ErrorResponse> handleInvalidOrder(InvalidOrderException ex, HttpServletRequest request) {
+		log.error("InvalidOrderException : "+ex.getMessage()+"\n"+request.getRequestURI());
+		errorLogger.error("InvalidOrderException : "+ex.getMessage()+"\n"+request.getRequestURI());
+		
 		return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI(), Map.of());
 	}
 
@@ -38,6 +44,9 @@ public class GlobalExceptionHandler {
 
 		Map<String, String> errors = ex.getBindingResult().getFieldErrors().stream().collect(Collectors
 				.toMap(error -> error.getField(), error -> error.getDefaultMessage(), (first, second) -> first));
+		
+		log.error("MethodArgumentNotValidException : "+errors+"\n"+request.getRequestURI());
+		errorLogger.error("MethodArgumentNotValidException : "+errors+"\n"+request.getRequestURI());
 
 		return buildResponse(HttpStatus.BAD_REQUEST, "Request validation failed", request.getRequestURI(), errors);
 	}
@@ -45,7 +54,8 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponse> handleGeneric(Exception ex, HttpServletRequest request) {
 		
-		log.error("Unexpected exception occurred: ", ex);
+		log.error("Exception : "+ex.getMessage()+"\n"+request.getRequestURI());
+		errorLogger.error("Exception : "+ex.getMessage()+"\n"+request.getRequestURI());
 
 		return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", request.getRequestURI(),
 				Map.of());

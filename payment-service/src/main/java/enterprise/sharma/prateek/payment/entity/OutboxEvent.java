@@ -59,8 +59,8 @@ public class OutboxEvent {
 	@Column(name = "CLAIMED_AT")
 	private LocalDateTime claimedAt;
 
-	@Column(name = "LAST_ERROR")
-	private String lastError;
+	@Column(name = "ERROR_MESSAGE")
+	private String errorMessage;
 
 	protected OutboxEvent() {
 	}

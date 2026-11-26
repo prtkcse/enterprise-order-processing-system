@@ -4,11 +4,17 @@ import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import enterprise.sharma.prateek.payment.kafka.PaymentEventProcessor;
+
 @Component
 public class SimulatedPaymentProcessor implements PaymentProcessor {
+	
+	private static final Logger log = LoggerFactory.getLogger(SimulatedPaymentProcessor.class);
 
 	@Value("${payment.processing.success-rate:90}")
 	private int successRate;
@@ -32,6 +38,8 @@ public class SimulatedPaymentProcessor implements PaymentProcessor {
 		if (randomNumber <= successRate) {
 
 			String transactionReference = "TXN-" + UUID.randomUUID();
+			
+			log.info("Generated transaction reference "+ transactionReference);
 
 			return PaymentProcessingResult.success(transactionReference);
 		}
