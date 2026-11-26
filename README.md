@@ -436,7 +436,7 @@ Each business microservice maintains its own database schema.
 - Service-specific persistence models
 - Transactional data updates
 - UUID-based identifiers
-- Oracle `RAW(16)` storage for UUIDs where configured
+- MySQL `BINARY(16)` storage for UUIDs where configured
 - Indexing for frequently queried fields
 - Idempotency constraints for event processing
 
